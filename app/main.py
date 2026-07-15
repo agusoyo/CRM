@@ -69,11 +69,15 @@ async def add_no_cache_headers(request, call_next):
     response.headers["Expires"] = "0"
     return response
 
+# Define Base Dir
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
 # Ensure folders exist
 if os.environ.get("VERCEL") == "1":
     UPLOAD_DIR = "/tmp/uploads"
 else:
-    UPLOAD_DIR = "static/uploads"
+    UPLOAD_DIR = os.path.join(STATIC_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ----------------- CLIENTS ENDPOINTS -----------------
@@ -1000,11 +1004,11 @@ def sync_sales(
 # ----------------- STATIC SPA SERVING -----------------
 @app.get("/favicon.ico", include_in_schema=False)
 def favicon():
-    return FileResponse("static/logo_sumelga.png")
+    return FileResponse(os.path.join(STATIC_DIR, "logo_sumelga.png"))
 
 @app.get("/")
 def read_root():
-    return FileResponse("static/index.html")
+    return FileResponse(os.path.join(STATIC_DIR, "index.html"))
 
 # Mount files for access
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
