@@ -70,7 +70,10 @@ async def add_no_cache_headers(request, call_next):
     return response
 
 # Ensure folders exist
-UPLOAD_DIR = "static/uploads"
+if os.environ.get("VERCEL") == "1":
+    UPLOAD_DIR = "/tmp/uploads"
+else:
+    UPLOAD_DIR = "static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ----------------- CLIENTS ENDPOINTS -----------------
