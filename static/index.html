@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Gestión Comercial | Sumelga</title>
+  
+  <!-- PWA & iOS Meta Tags -->
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#121212">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/static/logo_sumelga.png">
+  
+  <!-- Modern Typography (Outfit) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Sleek Icon Set (Boxicons) -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="/static/css/styles.css?v=1.0.4">
+  
+  <!-- html2pdf Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body class="dark-theme">
+
+  <!-- Main Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand" style="flex-direction: column; align-items: center; text-align: center; gap: 6px; padding-left: 0; margin-bottom: 28px; width: 100%; display: flex;">
+        <img src="/static/logo_sumelga.png" alt="Sumelga Logo" class="brand-logo" style="height: 52px; object-fit: contain; margin-bottom: 4px;">
+        <span style="font-size: 13px; font-weight: 800; color: #000000; text-transform: uppercase; letter-spacing: 1.5px;">Gestión Comercial</span>
+        <span style="font-size: 9px; font-weight: 600; color: #555555; text-transform: uppercase; letter-spacing: 2px;">by Agus</span>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <i class="bx bxs-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="clients">
+          <i class="bx bxs-business"></i>
+          <span>Clientes</span>
+        </button>
+        <button class="nav-item" data-tab="contacts">
+          <i class="bx bxs-user-detail"></i>
+          <span>Contactos</span>
+        </button>
+        <button class="nav-item" data-tab="visits">
+          <i class="bx bxs-calendar-event"></i>
+          <span>Visitas / Minutas</span>
+        </button>
+        <button class="nav-item" data-tab="calendar">
+          <i class="bx bxs-calendar"></i>
+          <span>Calendario</span>
+        </button>
+        <button class="nav-item" data-tab="tasks">
+          <i class="bx bx-task"></i>
+          <span>Acciones To-Do</span>
+        </button>
+        <button class="nav-item admin-only" data-tab="comerciales">
+          <i class="bx bxs-user-badge"></i>
+          <span>Comerciales</span>
+        </button>
+        <button class="nav-item admin-only" data-tab="configuracion">
+          <i class="bx bx-cog"></i>
+          <span>Configuración</span>
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar" id="current-user-avatar">AG</div>
+          <div class="info">
+            <span class="name" id="current-user-name">Agustín CRM</span>
+            <span class="role" id="current-user-role">Administrador</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top header bar -->
+      <header class="content-header">
+        <div class="header-search">
+          <i class="bx bx-search search-icon"></i>
+          <input type="search" id="global-search" placeholder="Buscar clientes, contactos o tareas...">
+        </div>
+        <div class="header-actions">
+          <div class="session-switcher">
+            <label for="session-user-select"><i class="bx bx-user-circle"></i> Sesión:</label>
+            <select id="session-user-select" class="select-glass">
+              <!-- Cargado dinámicamente -->
+            </select>
+          </div>
+          <button class="btn btn-primary hide-on-mobile" id="btn-quick-visit">
+            <i class="bx bx-plus"></i> Registrar Visita
+          </button>
+          <button class="theme-toggle-btn" id="theme-toggle" aria-label="Cambiar tema">
+            <i class="bx bx-sun"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- 1. DASHBOARD VIEW -->
+      <section class="tab-pane active" id="tab-dashboard">
+        <div class="view-header">
+          <div>
+            <h1>Cuadro de Mando</h1>
+            <p class="subtitle">Estado operativo y acciones prioritarias para hoy.</p>
+          </div>
+          <div class="dashboard-controls">
+            <label for="monthly-target-input">Objetivo Visitas:</label>
+            <input type="number" id="monthly-target-input" value="20" min="1" style="width: 70px;">
+          </div>
+        </div>
+
+        <!-- Metric Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon icon-blue"><i class="bx bx-briefcase"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-title">Clientes Activos</span>
+              <h2 class="kpi-value" id="metric-active-clients">-</h2>
+            </div>
+          </div>
+          
+          <div class="kpi-card">
+            <div class="kpi-icon icon-purple"><i class="bx bx-calendar-check"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-title">Visitas este Mes</span>
+              <div class="kpi-value-progress">
+                <h2 class="kpi-value" id="metric-monthly-visits">-</h2>
+                <span class="kpi-percentage" id="metric-visits-pct">-%</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar" id="visits-progress" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon icon-yellow"><i class="bx bx-time-five"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-title">Tareas Pendientes</span>
+              <h2 class="kpi-value" id="metric-pending-tasks">-</h2>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon icon-green"><i class="bx bx-checkbox-checked"></i></div>
+            <div class="kpi-data">
+              <span class="kpi-title">Acciones Cerradas (Mes)</span>
+              <h2 class="kpi-value" id="metric-completed-tasks">-</h2>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Column Dashboard Layout -->
+        <div class="dashboard-layout">
+          <!-- Column 1: Agenda -->
+          <div class="layout-column">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="bx bx-calendar"></i> Agenda de la Semana</h3>
+                <span class="badge" id="agenda-count">0 programadas</span>
+              </div>
+              <div class="card-body">
+                <div class="agenda-list" id="dashboard-agenda">
+                  <!-- Dynamic loading -->
+                  <div class="empty-state">
+                    <i class="bx bx-calendar-x"></i>
+                    <p>No tienes visitas programadas para esta semana.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Urgent To-Do -->
+          <div class="layout-column">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="bx bx-error-circle text-danger"></i> To-Do Urgente</h3>
+                <span class="badge badge-danger" id="urgent-tasks-count">0 urgentes</span>
+              </div>
+              <div class="card-body">
+                <div class="todo-list" id="dashboard-urgent-todo">
+                  <!-- Dynamic loading -->
+                  <div class="empty-state">
+                    <i class="bx bx-check-double text-success"></i>
+                    <p>¡Buen trabajo! No tienes tareas urgentes o vencidas.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. CLIENTS VIEW -->
+      <section class="tab-pane" id="tab-clients">
+        <div class="view-header">
+          <div>
+            <h1>Directorio de Clientes</h1>
+            <p class="subtitle">Administra organizaciones, segmentación y KPIs de negocio.</p>
+          </div>
+          <div class="header-actions-stack">
+            <button class="btn btn-primary show-on-mobile-only" id="btn-quick-visit-mobile">
+              <i class="bx bx-plus"></i> Añadir Visita
+            </button>
+            <button class="btn btn-primary" id="btn-add-client">
+              <i class="bx bx-plus"></i> Añadir Cliente
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <search class="search-box">
+            <i class="bx bx-search"></i>
+            <input type="search" id="client-search" placeholder="Buscar por Razón Social, CIF...">
+          </search>
+          
+          <select id="client-filter-sector" aria-label="Filtrar por Sector">
+            <option value="">Todos los sectores</option>
+            <option value="Automoción">Automoción</option>
+            <option value="Distribución">Distribución</option>
+            <option value="Industrial">Industrial</option>
+            <option value="Tecnológico">Tecnológico</option>
+            <option value="Otros">Otros</option>
+          </select>
+          
+          <select id="client-filter-tipo" aria-label="Filtrar por Tipo de Cliente">
+            <option value="">Todos los tipos</option>
+            <option value="CLIENTE FINAL">Cliente Final</option>
+            <option value="OEM">OEM</option>
+            <option value="SI">SI</option>
+            <option value="CUADRISTA">Cuadrista</option>
+            <option value="INSTALADOR">Instalador</option>
+          </select>
+          
+          <select id="client-filter-sociedad" aria-label="Filtrar por Sociedad">
+            <option value="">Todas las sociedades</option>
+            <option value="Sumelga">Sumelga</option>
+            <option value="Meganor">Meganor</option>
+          </select>
+        </div>
+
+        <!-- Master-Detail Layout -->
+        <div class="master-detail-layout">
+          <!-- Master List -->
+          <div class="master-panel">
+            <div class="table-container">
+              <table class="data-table" id="clients-table">
+                <thead>
+                  <tr>
+                    <th>Empresa</th>
+                    <th class="hide-on-mobile">Tipo</th>
+                    <th class="hide-on-mobile">Clasificación</th>
+                    <th class="hide-on-mobile">Comercial</th>
+                    <th>Última Visita</th>
+                    <th>Histórico Ventas</th>
+                  </tr>
+                </thead>
+                <tbody id="clients-table-body">
+                  <!-- Dynamic loading -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Detail Panel in Cascade -->
+          <aside class="detail-panel" id="client-detail-panel" hidden>
+            <button class="close-panel-btn" id="close-detail-panel"><i class="bx bx-x"></i></button>
+            
+            <div class="detail-header">
+              <span class="detail-badge" id="detail-client-abc">A</span>
+              <h2 id="detail-client-name">Nombre Empresa</h2>
+              <p id="detail-client-commercial">Razón Social</p>
+            </div>
+            
+            <div class="detail-tabs">
+              <button class="detail-tab-btn active" data-detail-tab="summary">Ficha General</button>
+              <button class="detail-tab-btn" data-detail-tab="offers">Ofertas</button>
+              <button class="detail-tab-btn" data-detail-tab="visits">Visitas</button>
+              <button class="detail-tab-btn" data-detail-tab="tasks">Acciones</button>
+            </div>
+            
+            <div class="detail-body">
+              <!-- Ficha General Tab -->
+              <div class="detail-tab-content active" id="detail-tab-summary">
+                <div class="summary-tab-grid">
+                  <!-- Col 1: Información y Contactos -->
+                  <div class="summary-grid-left">
+                    <!-- Client Info Box -->
+                    <div class="detail-card">
+                      <div class="info-group-grid">
+                        <div class="info-group">
+                          <span class="label">CIF / NIF</span>
+                          <span class="val" id="detail-client-cif">-</span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Código Sumelga</span>
+                          <span class="val" id="detail-client-sumelga">-</span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Teléfono</span>
+                          <span class="val" id="detail-client-phone">-</span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Sitio Web</span>
+                          <span class="val"><a href="#" id="detail-client-web" target="_blank">-</a></span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Sector</span>
+                          <span class="val" id="detail-client-sector">-</span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Tipo de Cliente</span>
+                          <span class="val" id="detail-client-type">-</span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Histórico de Ventas</span>
+                          <div class="sales-history-list" style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px; font-size: 0.9em;">
+                            <div class="sales-year"><span class="year text-muted">2026:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="val val-highlight" id="detail-client-sales">-</span></div>
+                            <div class="sales-year"><span class="year text-muted">2025:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="val text-muted" id="detail-client-sales-prev">-</span></div>
+                            <div class="sales-year"><span class="year text-muted">2024:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="val text-muted" id="detail-client-sales-2024">-</span></div>
+                            <div class="sales-year"><span class="year text-muted">2023:</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="val text-muted" id="detail-client-sales-2023">-</span></div>
+                          </div>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Sociedad</span>
+                          <span class="val" id="detail-client-sociedad">-</span>
+                        </div>
+                        <div class="info-group">
+                          <span class="label">Comercial Asignado</span>
+                          <span class="val" id="detail-client-comercial-assigned">-</span>
+                        </div>
+                      </div>
+                      
+                      <div class="info-group address-group" style="margin-top: 16px;">
+                        <span class="label">Dirección</span>
+                        <div class="address-box">
+                          <span id="detail-client-address">-</span>
+                          <a href="#" id="detail-client-map" target="_blank" class="btn btn-sm btn-outline">
+                            <i class="bx bx-map-pin"></i> Ver en Google Maps
+                          </a>
+                        </div>
+                      </div>
+
+                      <div class="info-actions" style="margin-top: 20px; display: flex; gap: 8px;">
+                        <button class="btn btn-outline btn-sm" id="btn-edit-client">
+                          <i class="bx bx-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-outline btn-danger btn-sm admin-only" id="btn-delete-client">
+                          <i class="bx bx-trash"></i> Eliminar
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Contacts Box -->
+                    <div class="detail-card" style="margin-top: 24px; padding: 20px; border: var(--border-glass); background: var(--bg-secondary); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
+                      <div class="tab-section-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-primary);">Contactos Vinculados</h4>
+                        <button class="btn btn-sm btn-primary" id="btn-add-contact-to-client" type="button"><i class="bx bx-plus"></i></button>
+                      </div>
+                      <div class="compact-list" id="detail-contacts-list"></div>
+                    </div>
+                  </div>
+
+                  <!-- Col 2: Resúmenes y Accesos Directos (Hub) -->
+                  <div class="summary-grid-right" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- Ofertas Hub Card -->
+                    <div class="hub-kpi-card">
+                      <div class="hub-kpi-header">
+                        <i class="bx bx-file"></i>
+                        <span class="hub-kpi-title">Ofertas en Curso</span>
+                      </div>
+                      <div class="hub-kpi-stats">
+                        <div class="hub-stat-item">
+                          <span class="stat-label">Total Ofertas</span>
+                          <span class="stat-val" id="hub-stat-offers-count">0</span>
+                        </div>
+                        <div class="hub-stat-item">
+                          <span class="stat-label">Importe Total</span>
+                          <span class="stat-val text-primary" id="hub-stat-offers-total">0,00 €</span>
+                        </div>
+                      </div>
+                      <button class="btn btn-primary btn-block" id="btn-goto-offers" type="button">
+                        Ver Detalle de Ofertas <i class="bx bx-chevron-right"></i>
+                      </button>
+                    </div>
+
+                    <!-- Visitas Hub Card -->
+                    <div class="hub-kpi-card">
+                      <div class="hub-kpi-header">
+                        <i class="bx bx-calendar"></i>
+                        <span class="hub-kpi-title">Historial de Visitas</span>
+                      </div>
+                      <div class="hub-kpi-stats">
+                        <div class="hub-stat-item">
+                          <span class="stat-label">Total Visitas</span>
+                          <span class="stat-val" id="hub-stat-visits-count">0</span>
+                        </div>
+                      </div>
+                      <button class="btn btn-outline btn-block" id="btn-goto-visits" type="button">
+                        Ver Detalle de Visitas <i class="bx bx-chevron-right"></i>
+                      </button>
+                    </div>
+
+                    <!-- Acciones Hub Card -->
+                    <div class="hub-kpi-card">
+                      <div class="hub-kpi-header">
+                        <i class="bx bx-check-square"></i>
+                        <span class="hub-kpi-title">Acciones Pendientes</span>
+                      </div>
+                      <div class="hub-kpi-stats">
+                        <div class="hub-stat-item">
+                          <span class="stat-label">Tareas Pendientes</span>
+                          <span class="stat-val text-warning" id="hub-stat-tasks-count">0</span>
+                        </div>
+                      </div>
+                      <button class="btn btn-outline btn-block" id="btn-goto-tasks" type="button">
+                        Ver Detalle de Acciones <i class="bx bx-chevron-right"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Visitas Tab -->
+              <div class="detail-tab-content" id="detail-tab-visits">
+                <div class="tab-section-header">
+                  <h4>Historial de Interacciones</h4>
+                  <button class="btn btn-sm btn-primary" id="btn-add-visit-to-client"><i class="bx bx-plus"></i></button>
+                </div>
+                <div class="compact-list" id="detail-visits-list"></div>
+              </div>
+
+              <!-- Tasks Tab -->
+              <div class="detail-tab-content" id="detail-tab-tasks">
+                <div class="tab-section-header">
+                  <h4>Acciones Pendientes</h4>
+                  <button class="btn btn-sm btn-primary" id="btn-add-task-to-client"><i class="bx bx-plus"></i></button>
+                </div>
+                <div class="compact-list" id="detail-tasks-list"></div>
+              </div>
+
+              <!-- Offers Tab -->
+              <div class="detail-tab-content" id="detail-tab-offers">
+                <div class="tab-section-header">
+                  <h4>Ofertas en Curso</h4>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-sm btn-outline" id="btn-export-offers-excel" title="Exportar a CSV/Excel"><i class="bx bx-file"></i> Excel</button>
+                    <button class="btn btn-sm btn-outline" id="btn-export-offers-pdf" title="Exportar a PDF/Imprimir"><i class="bx bxs-file-pdf"></i> PDF</button>
+                  </div>
+                </div>
+                <div class="offers-summary-grid" id="detail-offers-summary">
+                  <!-- Dynamic summary metrics -->
+                </div>
+                <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                  <table class="data-table" id="detail-offers-table" style="font-size: 12px; width: 100%;">
+                    <thead>
+                      <tr>
+                        <th>Nº Oferta</th>
+                        <th>Referencia / Descripción</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th style="text-align: right;">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody id="detail-offers-list">
+                      <!-- Dynamic loading -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 3. CONTACTS VIEW -->
+      <section class="tab-pane" id="tab-contacts">
+        <div class="view-header">
+          <div>
+            <h1>Personas de Contacto</h1>
+            <p class="subtitle">Organización, cargos e interlocutores clave.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-contact">
+            <i class="bx bx-plus"></i> Nuevo Contacto
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <select id="contact-filter-client" aria-label="Filtrar por Empresa">
+            <option value="">Todas las empresas</option>
+          </select>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table" id="contacts-table">
+            <thead>
+              <tr>
+                <th>Nombre Completo</th>
+                <th>Empresa</th>
+                <th>Cargo / Puesto</th>
+                <th>Decisión</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>LinkedIn</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="contacts-table-body">
+              <!-- Dynamic loading -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. VISITS / MEETING NOTES VIEW -->
+      <section class="tab-pane" id="tab-visits">
+        <div class="view-header">
+          <div>
+            <h1>Historial de Visitas</h1>
+            <p class="subtitle">Registros, actas y minutas de reuniones.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-visit">
+            <i class="bx bx-plus"></i> Nueva Visita
+          </button>
+        </div>
+
+        <div class="filter-bar" style="flex-wrap: wrap; gap: 8px;">
+          <select id="visit-filter-year" aria-label="Filtrar por Año">
+            <option value="">Todos los años</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+          <select id="visit-filter-month" aria-label="Filtrar por Mes">
+            <option value="">Todos los meses</option>
+            <option value="01">Enero</option>
+            <option value="02">Febrero</option>
+            <option value="03">Marzo</option>
+            <option value="04">Abril</option>
+            <option value="05">Mayo</option>
+            <option value="06">Junio</option>
+            <option value="07">Julio</option>
+            <option value="08">Agosto</option>
+            <option value="09">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+          <select id="visit-filter-client" aria-label="Filtrar por Empresa">
+            <option value="">Todas las empresas</option>
+          </select>
+        </div>
+
+        <div class="visits-timeline" id="visits-timeline-container">
+          <!-- Dynamic loading -->
+        </div>
+      </section>
+
+      <!-- 5. TASKS / ACTIONS VIEW -->
+      <section class="tab-pane" id="tab-tasks">
+        <div class="view-header">
+          <div>
+            <h1>Acciones y Tareas Pendientes</h1>
+            <p class="subtitle">El motor de seguimiento. Vence a tiempo y cierra tratos.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-task">
+            <i class="bx bx-plus"></i> Nueva Tarea
+          </button>
+        </div>
+
+        <div class="filter-bar">
+          <select id="task-filter-client" aria-label="Filtrar por Empresa">
+            <option value="">Todas las empresas</option>
+          </select>
+        </div>
+
+        <div class="tasks-kanban-board">
+          <!-- Column: Pendiente -->
+          <div class="kanban-column">
+            <div class="kanban-header yellow-glow">
+              <h3>Pendiente</h3>
+              <span class="badge" id="count-todo">0</span>
+            </div>
+            <div class="kanban-cards-container" id="tasks-todo-list">
+              <!-- Dynamic -->
+            </div>
+          </div>
+
+          <!-- Column: En Progreso -->
+          <div class="kanban-column">
+            <div class="kanban-header purple-glow">
+              <h3>En Progreso</h3>
+              <span class="badge" id="count-progress">0</span>
+            </div>
+            <div class="kanban-cards-container" id="tasks-progress-list">
+              <!-- Dynamic -->
+            </div>
+          </div>
+
+          <!-- Column: Completada -->
+          <div class="kanban-column">
+            <div class="kanban-header green-glow">
+              <h3>Completada</h3>
+              <span class="badge" id="count-done">0</span>
+            </div>
+            <div class="kanban-cards-container" id="tasks-done-list">
+              <!-- Dynamic -->
+            </div>
+          </div>
+
+          <!-- Column: Cancelada -->
+          <div class="kanban-column text-muted">
+            <div class="kanban-header">
+              <h3>Cancelada</h3>
+              <span class="badge" id="count-cancelled">0</span>
+            </div>
+            <div class="kanban-cards-container" id="tasks-cancelled-list">
+              <!-- Dynamic -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. CALENDAR VIEW -->
+      <section class="tab-pane" id="tab-calendar">
+        <div class="view-header">
+          <div>
+            <h1>Calendario de Visitas</h1>
+            <p class="subtitle">Planifica, visualiza y gestiona tus reuniones mensuales de un vistazo.</p>
+          </div>
+          <button class="btn btn-primary" id="calendar-btn-add-visit">
+            <i class="bx bx-plus"></i> Registrar Visita
+          </button>
+        </div>
+
+        <div class="calendar-wrapper">
+          <div class="calendar-navigation">
+            <button class="btn btn-outline" id="calendar-prev-month" title="Mes Anterior">
+              <i class="bx bx-chevron-left"></i>
+            </button>
+            <h2 id="calendar-month-year">Mayo 2026</h2>
+            <button class="btn btn-outline" id="calendar-next-month" title="Siguiente Mes">
+              <i class="bx bx-chevron-right"></i>
+            </button>
+            <button class="btn btn-outline btn-sm" id="calendar-today-btn">Hoy</button>
+          </div>
+
+          <div class="calendar-container">
+            <div class="calendar-grid-header">
+              <div>Lun</div>
+              <div>Mar</div>
+              <div>Mié</div>
+              <div>Jue</div>
+              <div>Vie</div>
+              <div>Sáb</div>
+              <div>Dom</div>
+            </div>
+            <div class="calendar-grid" id="calendar-days-grid">
+              <!-- Celdas cargadas dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. COMERCIALES VIEW -->
+      <section class="tab-pane" id="tab-comerciales">
+        <div class="view-header">
+          <div>
+            <h1>Equipo de Comerciales</h1>
+            <p class="subtitle">Alta, baja y modificaciones del equipo de ventas (Solo Administradores).</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-comercial">
+            <i class="bx bx-plus"></i> Registrar Comercial
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table" id="comerciales-table">
+            <thead>
+              <tr>
+                <th>Comercial</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Cuentas Asignadas</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="comerciales-table-body">
+              <!-- Dynamic loading -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== CONFIGURACIÓN TAB ===== -->
+      <section class="tab-pane" id="tab-configuracion">
+        <div class="view-header">
+          <div>
+            <h1>Configuración del Sistema</h1>
+            <p class="subtitle">Importación de datos, diagnósticos y mantenimiento de la base de datos.</p>
+          </div>
+        </div>
+
+        <div class="config-grid">
+
+          <!-- ── Columna Izquierda ── -->
+          <div class="config-col">
+
+            <!-- IMPORTAR OFERTAS -->
+            <div class="config-card">
+              <div class="config-card-header">
+                <i class="bx bx-import"></i>
+                <div>
+                  <h3>Importar Ofertas desde Excel</h3>
+                  <p>Actualiza o reemplaza el listado de ofertas en curso cargando un nuevo fichero Excel.</p>
+                </div>
+              </div>
+
+              <div class="config-card-body">
+                <div class="upload-zone" id="upload-zone-offers">
+                  <i class="bx bx-cloud-upload upload-zone-icon"></i>
+                  <p class="upload-zone-label">Arrastra el fichero aquí o haz clic para seleccionar</p>
+                  <p class="upload-zone-hint">Formato: <strong>.xlsx</strong> · Columnas requeridas: Oferta, Cli./Pot., F. Oferta, Total Importe, Situación…</p>
+                  <input type="file" id="input-offers-file" accept=".xlsx,.xls" style="display:none;">
+                </div>
+
+                <div class="upload-options">
+                  <label class="toggle-label">
+                    <input type="checkbox" id="chk-replace-offers" checked>
+                    <span>Reemplazar todas las ofertas existentes de la sociedad seleccionada</span>
+                  </label>
+                  <div class="form-group" style="margin-top:12px;">
+                    <label for="sel-import-sociedad">Sociedad</label>
+                    <select id="sel-import-sociedad" class="select-glass">
+                      <option value="Sumelga">Sumelga</option>
+                      <option value="Meganor">Meganor</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div id="import-offers-progress" style="display:none;">
+                  <div class="progress-bar-outer">
+                    <div class="progress-bar-inner" id="import-progress-bar"></div>
+                  </div>
+                  <p class="progress-label" id="import-progress-label">Procesando…</p>
+                </div>
+
+                <div id="import-offers-result" class="import-result" style="display:none;"></div>
+
+                <button class="btn btn-primary" id="btn-import-offers" style="margin-top:16px; width:100%;" disabled>
+                  <i class="bx bx-upload"></i> Importar Ofertas
+                </button>
+              </div>
+            </div>
+
+            <!-- OPTIMIZAR ÍNDICES -->
+            <div class="config-card" style="margin-top:24px;">
+              <div class="config-card-header">
+                <i class="bx bx-data"></i>
+                <div>
+                  <h3>Optimización de Índices</h3>
+                  <p>Aplica o reconstruye los 35 índices de rendimiento sobre todas las tablas y ejecuta ANALYZE + VACUUM.</p>
+                </div>
+              </div>
+              <div class="config-card-body">
+                <div id="optimize-result" class="import-result" style="display:none;"></div>
+                <button class="btn btn-outline" id="btn-optimize-db" style="width:100%;">
+                  <i class="bx bx-wrench"></i> Optimizar Base de Datos
+                </button>
+              </div>
+            </div>
+
+            <!-- SINCRONIZAR VENTAS DESDE ERP -->
+            <div class="config-card" style="margin-top:24px;">
+              <div class="config-card-header">
+                <i class="bx bx-sync"></i>
+                <div>
+                  <h3>Sincronizar Ventas desde ERP</h3>
+                  <p>Recalcula el histórico de ventas y la clasificación ABC del año en curso desde <code>kpi_comercial.db</code>. Crea los clientes nuevos que aún no existan en el CRM. <strong>No modifica</strong> contactos, visitas, tareas ni ofertas.</p>
+                  <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="sync-db-path">Ruta de kpi_comercial.db (Opcional, dejar por defecto si no estás seguro)</label>
+                    <input type="text" id="sync-db-path" class="input" value="/Users/agus/Developer/KPI_Comercial/backend/kpi_comercial.db" style="width: 100%;">
+                  </div>
+                </div>
+              </div>
+              <div class="config-card-body">
+                <div id="sync-sales-result" class="import-result" style="display:none;"></div>
+                <button class="btn btn-outline" id="btn-sync-sales" style="width:100%;">
+                  <i class="bx bx-refresh"></i> Sincronizar Ventas <span id="sync-sales-year"></span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ── Columna Derecha: Diagnósticos ── -->
+          <div class="config-col">
+            <div class="config-card config-card-diagnostics">
+              <div class="config-card-header">
+                <i class="bx bx-pulse"></i>
+                <div>
+                  <h3>Diagnóstico del Sistema</h3>
+                  <p>Estado en tiempo real del servidor y la base de datos.</p>
+                </div>
+                <button class="btn btn-sm btn-outline" id="btn-refresh-diagnostics" style="margin-left:auto;">
+                  <i class="bx bx-refresh"></i> Actualizar
+                </button>
+              </div>
+              <div class="config-card-body" id="diagnostics-body">
+                <div class="diag-loading">
+                  <i class="bx bx-loader-alt bx-spin"></i> Cargando diagnósticos…
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+  
+  <!-- 1. CLIENT MODAL -->
+  <dialog class="modal-dialog" id="modal-client" closedby="any">
+    <div class="modal-header">
+      <h2 id="modal-client-title">Añadir Cliente</h2>
+      <button class="btn-close-modal" method="dialog"><i class="bx bx-x"></i></button>
+    </div>
+    <form class="modal-form" id="form-client" method="dialog">
+      <input type="hidden" name="id" id="client-form-id">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="client-razon">Razón Social *</label>
+          <input type="text" id="client-razon" name="razon_social" required placeholder="Ej. Automoción S.L.">
+        </div>
+        <div class="form-group">
+          <label for="client-comercial">Nombre Comercial</label>
+          <input type="text" id="client-comercial" name="nombre_comercial" placeholder="Ej. AutoParts Iberia">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="client-cif-val">CIF / NIF</label>
+          <input type="text" id="client-cif-val" name="cif_nif" placeholder="Ej. B12345678">
+        </div>
+        <div class="form-group">
+          <label for="client-sumelga-val">Código Cliente (ERP)</label>
+          <input type="text" id="client-sumelga-val" name="codigo_sumelga" placeholder="Ej. 00023">
+        </div>
+        <div class="form-group">
+          <label for="client-sociedad">Sociedad *</label>
+          <select id="client-sociedad" name="sociedad" required>
+            <option value="Sumelga">Sumelga</option>
+            <option value="Meganor">Meganor</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="client-telefono">Teléfono General</label>
+          <input type="tel" id="client-telefono" name="telefono" placeholder="Ej. +34 912 345 678">
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="client-via">Vía</label>
+          <input type="text" id="client-via" name="via" placeholder="Ej. C/, Avda, PG">
+        </div>
+        <div class="form-group">
+          <label for="client-direccion">Dirección (Calle)</label>
+          <input type="text" id="client-direccion" name="direccion" placeholder="Ej. Galileo Galilei, P.I. Río do Pozo">
+        </div>
+        <div class="form-group">
+          <label for="client-numero">Número</label>
+          <input type="text" id="client-numero" name="numero" placeholder="Ej. 8, s/n, Nave E21">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="client-poblacion">Población</label>
+          <input type="text" id="client-poblacion" name="poblacion" placeholder="Ej. A CORUÑA, Vigo">
+        </div>
+        <div class="form-group">
+          <label for="client-cp">Código Postal</label>
+          <input type="text" id="client-cp" name="codigo_postal" placeholder="Ej. 15008, 36475">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="client-web-val">Sitio Web</label>
+          <input type="url" id="client-web-val" name="web" placeholder="Ej. https://web.com">
+        </div>
+        <div class="form-group">
+          <label for="client-ventas">Histórico de Ventas</label>
+          <input type="number" id="client-ventas" name="volumen_ventas" step="0.01" value="0.00">
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="client-tipo">Tipo de Cliente</label>
+          <select id="client-tipo" name="tipo_cliente">
+            <option value="CLIENTE FINAL">Cliente Final</option>
+            <option value="OEM">OEM</option>
+            <option value="SI">SI</option>
+            <option value="CUADRISTA">Cuadrista</option>
+            <option value="INSTALADOR">Instalador</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="client-sector-val">Sector / Industria</label>
+          <select id="client-sector-val" name="sector">
+            <option value="Automoción">Automoción</option>
+            <option value="Distribución">Distribución</option>
+            <option value="Industrial">Industrial</option>
+            <option value="Tecnológico">Tecnológico</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="client-abc">Clasificación ABC</label>
+          <select id="client-abc" name="clasificacion_abc">
+            <option value="A">A (Alto Potencial)</option>
+            <option value="B">B (Medio Potencial)</option>
+            <option value="C" selected>C (Bajo Potencial)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row admin-only-field">
+        <div class="form-group">
+          <label for="client-comercial-select">Comercial Asignado</label>
+          <select id="client-comercial-select" name="comercial_id">
+            <option value="">-- Sin asignar --</option>
+            <!-- Cargado dinámicamente -->
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 2. CONTACT MODAL -->
+  <dialog class="modal-dialog" id="modal-contact" closedby="any">
+    <div class="modal-header">
+      <h2 id="modal-contact-title">Añadir Contacto</h2>
+      <button class="btn-close-modal" method="dialog"><i class="bx bx-x"></i></button>
+    </div>
+    <form class="modal-form" id="form-contact" method="dialog">
+      <input type="hidden" name="id" id="contact-form-id">
+      
+      <div class="form-group">
+        <label for="contact-client">Empresa Perteneciente *</label>
+        <select id="contact-client" name="client_id" required>
+          <!-- Carga dinámica -->
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="contact-nombre">Nombre *</label>
+          <input type="text" id="contact-nombre" name="nombre" required placeholder="Ej. Juan">
+        </div>
+        <div class="form-group">
+          <label for="contact-apellidos">Apellidos *</label>
+          <input type="text" id="contact-apellidos" name="apellidos" required placeholder="Ej. Pérez Gómez">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="contact-email">Email Directo</label>
+          <input type="email" id="contact-email" name="email" placeholder="Ej. juan@empresa.com">
+        </div>
+        <div class="form-group">
+          <label for="contact-movil">Teléfono Móvil</label>
+          <input type="tel" id="contact-movil" name="movil" placeholder="Ej. 654 321 098">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="contact-cargo">Cargo o Puesto</label>
+          <input type="text" id="contact-cargo" name="cargo" placeholder="Ej. Director de Compras">
+        </div>
+        <div class="form-group">
+          <label for="contact-linkedin">Perfil de LinkedIn</label>
+          <input type="url" id="contact-linkedin" name="linkedin" placeholder="Ej. https://linkedin.com/in/usuario">
+        </div>
+        <div class="form-group">
+          <label for="contact-decision">Nivel de Decisión</label>
+          <select id="contact-decision" name="nivel_decision">
+            <option value="Decisor">Decisor</option>
+            <option value="Prescriptor">Prescriptor</option>
+            <option value="Usuario" selected>Usuario</option>
+            <option value="Bloqueador">Bloqueador</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contact-notas">Notas Personales (Empatía/Preferencias)</label>
+        <textarea id="contact-notas" name="notas_personales" rows="3" placeholder="Ej. Prefiere reuniones a primera hora. Muy enfocado en costes. Contacto clave."></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 3. VISIT MODAL -->
+  <dialog class="modal-dialog" id="modal-visit" closedby="any">
+    <div class="modal-header">
+      <h2 id="modal-visit-title">Registrar Visita o Acta</h2>
+      <button class="btn-close-modal" method="dialog"><i class="bx bx-x"></i></button>
+    </div>
+    <form class="modal-form" id="form-visit" method="dialog">
+      <input type="hidden" name="id" id="visit-form-id">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit-client">Empresa Visitada *</label>
+          <select id="visit-client" name="client_id" required>
+            <!-- Carga dinámica -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="visit-tipo">Tipo de Reunión</label>
+          <select id="visit-tipo" name="tipo_visita">
+            <option value="Presencial">Presencial</option>
+            <option value="Teams/Zoom">Teams/Zoom</option>
+            <option value="Telefónica">Telefónica</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="visit-fecha">Fecha *</label>
+          <input type="date" id="visit-fecha" name="fecha" required>
+        </div>
+        <div class="form-group">
+          <label for="visit-hora">Hora *</label>
+          <input type="time" id="visit-hora" name="hora" required>
+        </div>
+        <div class="form-group">
+          <label for="visit-duracion">Duración (minutos)</label>
+          <input type="number" id="visit-duracion" name="duracion" value="60" min="5">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Asistentes del Cliente</label>
+        <div class="checkbox-select-list" id="visit-attendees-checkboxes">
+          <p class="text-muted text-sm">Selecciona una empresa para cargar sus contactos...</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="visit-acompanantes">Acompañantes Internos</label>
+        <input type="text" id="visit-acompanantes" name="acompanantes_internos" placeholder="Ej. Director Técnico, Ingeniero de Soporte">
+      </div>
+
+      <!-- Minuta with speech-to-text dictation -->
+      <fieldset class="minuta-fieldset">
+        <legend>Minuta de la Reunión (Notas)</legend>
+        
+        <div class="form-group">
+          <div class="label-with-voice">
+            <label for="visit-objetivo">Objetivo de la Reunión</label>
+            <button type="button" class="btn-voice" data-target="visit-objetivo" title="Dictar por voz">
+              <i class="bx bx-microphone"></i> Dictar
+            </button>
+          </div>
+          <textarea id="visit-objetivo" name="objetivo" rows="2" placeholder="¿Qué ibas a buscar? (Ej. Presentación de catálogo, negociación...)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-voice">
+            <label for="visit-puntos">Puntos Tratados</label>
+            <button type="button" class="btn-voice" data-target="visit-puntos" title="Dictar por voz">
+              <i class="bx bx-microphone"></i> Dictar
+            </button>
+          </div>
+          <textarea id="visit-puntos" name="puntos_tratados" rows="3" placeholder="Notas clave de lo que se habló durante la reunión..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-voice">
+            <label for="visit-conclusiones">Conclusiones / Resultados</label>
+            <button type="button" class="btn-voice" data-target="visit-conclusiones" title="Dictar por voz">
+              <i class="bx bx-microphone"></i> Dictar
+            </button>
+          </div>
+          <textarea id="visit-conclusiones" name="conclusiones" rows="2" placeholder="Resultados o acuerdos directos alcanzados..."></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Attachments upload -->
+      <div class="form-group">
+        <label>Documentación / Archivos Asociados (Arrastra o selecciona)</label>
+        <div class="upload-dropzone" id="visit-dropzone">
+          <i class="bx bx-cloud-upload upload-drop-icon"></i>
+          <span class="upload-drop-text">Arrastra ofertas, fotos o requerimientos técnicos aquí, o haz clic para subir</span>
+          <input type="file" id="visit-file-input" multiple style="display: none;">
+        </div>
+        <div class="uploaded-files-list" id="visit-uploaded-files"></div>
+      </div>
+
+      <div class="form-group" style="margin-top: 10px;">
+        <label class="toggle-label">
+          <input type="checkbox" id="visit-create-task" name="create_task" checked>
+          <span>Crear tarea de seguimiento vinculada a esta visita</span>
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 4. TASK MODAL -->
+  <dialog class="modal-dialog" id="modal-task" closedby="any">
+    <div class="modal-header">
+      <h2 id="modal-task-title">Crear Acción Pendiente</h2>
+      <button class="btn-close-modal" method="dialog"><i class="bx bx-x"></i></button>
+    </div>
+    <form class="modal-form" id="form-task" method="dialog">
+      <input type="hidden" name="id" id="task-form-id">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="task-client-select">Vincular a Cliente *</label>
+          <select id="task-client-select" name="client_id" required>
+            <!-- Dinámico -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="task-visit-select">Vincular a Visita (Origen)</label>
+          <select id="task-visit-select" name="visit_id">
+            <option value="">Ninguna visita</option>
+            <!-- Dinámico -->
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="task-desc">Descripción de la Tarea *</label>
+        <textarea id="task-desc" name="descripcion" required rows="2" placeholder="Ej. Enviar oferta de paneles revisada y llamar para cerrar fecha de pruebas."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="task-limite">Fecha Límite (Deadline) *</label>
+          <input type="date" id="task-limite" name="fecha_limite" required>
+        </div>
+        <div class="form-group">
+          <label for="task-prioridad">Prioridad</label>
+          <select id="task-prioridad" name="prioridad">
+            <option value="Alta">Alta</option>
+            <option value="Media" selected>Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="task-estado">Estado</label>
+          <select id="task-estado" name="estado">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En Progreso">En Progreso</option>
+            <option value="Completada">Completada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Acción</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 5. COMERCIAL MODAL -->
+  <dialog class="modal-dialog" id="modal-comercial" closedby="any">
+    <div class="modal-header">
+      <h2 id="modal-comercial-title">Registrar Comercial</h2>
+      <button class="btn-close-modal" method="dialog"><i class="bx bx-x"></i></button>
+    </div>
+    <form class="modal-form" id="form-comercial" method="dialog">
+      <input type="hidden" name="id" id="comercial-form-id">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="comercial-username">Nombre de Usuario *</label>
+          <input type="text" id="comercial-username" name="username" required placeholder="Ej. carlossanz">
+        </div>
+        <div class="form-group">
+          <label for="comercial-role">Rol</label>
+          <select id="comercial-role" name="role">
+            <option value="Comercial" selected>Comercial</option>
+            <option value="Administrador">Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="comercial-password">Contraseña</label>
+          <input type="password" id="comercial-password" name="password" placeholder="Solo para modificar">
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="comercial-nombre">Nombre *</label>
+          <input type="text" id="comercial-nombre" name="nombre" required placeholder="Ej. Carlos">
+        </div>
+        <div class="form-group">
+          <label for="comercial-apellidos">Apellidos *</label>
+          <input type="text" id="comercial-apellidos" name="apellidos" required placeholder="Ej. Sanz">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="comercial-email">Correo Electrónico</label>
+        <input type="email" id="comercial-email" name="email" placeholder="Ej. carlos@sumelga.com">
+      </div>
+
+      <div class="form-group">
+        <label for="comercial-active">Estado</label>
+        <select id="comercial-active" name="is_active">
+          <option value="true" selected>Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 6. PASSWORD PROMPT MODAL -->
+  <dialog class="modal-dialog" id="modal-password-prompt" closedby="any" style="max-width: 380px;">
+    <div class="modal-header">
+      <h2>Verificación de Seguridad</h2>
+      <button class="btn-close-modal" id="btn-close-password-modal"><i class="bx bx-x"></i></button>
+    </div>
+    <form class="modal-form" id="form-password-prompt" method="dialog" onsubmit="return false;">
+      <input type="hidden" id="password-prompt-user-id">
+      <p class="text-sm text-secondary" style="margin-bottom: 16px;">Introduce la contraseña para el usuario <strong id="password-prompt-user-name">-</strong> para poder cambiar de sesión.</p>
+      
+      <div class="form-group">
+        <label for="session-password-input">Contraseña *</label>
+        <input type="password" id="session-password-input" required placeholder="Introduce tu clave..." style="width: 100%;">
+        <span id="password-error-msg" class="text-danger text-sm" style="display: none; margin-top: 6px; font-weight: 500;"></span>
+      </div>
+      
+      <div class="modal-footer" style="margin-top: 24px;">
+        <button type="button" class="btn btn-outline" id="btn-cancel-password">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btn-confirm-password">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/static/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+
+  <!-- External JS File -->
+  <script src="/static/js/app.js?v=1.0.4"></script>
+</body>
+</html>
